@@ -1,13 +1,39 @@
 package main
 
 import (
+	"os"
+	"runtime/pprof"
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"morphbits.io/app/interface/dictionary"
+	"morphbits.io/app/interface/metrics"
 	"morphbits.io/app/usecase"
 	"morphbits.io/app/usecase/keyboard"
 )
 
 func main() {
+	////////////////////////////////////
+	//// go tool pprof main main.prof
+	f, err := os.Create("main.prof")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	if err = pprof.StartCPUProfile(f); err != nil {
+		log.WithField("err", err).Warn("Failed run profiler")
+	}
+
+	defer pprof.StopCPUProfile()
+	////////////////////////////////////
+
+	log.SetFormatter(&log.TextFormatter{ //nolint:exhaustruct // other fields are defaults
+		TimestampFormat: time.RFC3339,
+		FullTimestamp:   true,
+	})
+
+	m := metrics.New()
+
 	kbd, err := keyboard.NewQWERTY()
 	if err != nil {
 		log.WithField("err", err).Info("Failed init keyboard")
@@ -16,10 +42,12 @@ func main() {
 
 	dictReader := dictionary.NewFileReader("./data/corncob_lowercase.txt")
 
-	app := usecase.NewApp(dictReader, kbd)
+	app := usecase.NewApp(m, dictReader, kbd)
 
 	if err := app.Run(); err != nil {
 		log.WithField("err", err).Info("Application terminated with error code")
 		return
 	}
+
+	log.WithFields(m.GetMetrics()).Info("Metrics")
 }

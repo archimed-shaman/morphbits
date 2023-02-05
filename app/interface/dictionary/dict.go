@@ -17,7 +17,7 @@ func NewFileReader(fileName string) *FileReader {
 	}
 }
 
-func (fr *FileReader) Run(handler func(word string)) error {
+func (fr *FileReader) Run(handler func(word string) error) error {
 	f, err := os.Open(fr.fileName)
 	if err != nil {
 		return pkgerr.Wrapf(err, "failed open file '%s'", fr.fileName)
@@ -27,7 +27,9 @@ func (fr *FileReader) Run(handler func(word string)) error {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		handler(scanner.Text())
+		if err := handler(scanner.Text()); err != nil {
+			return pkgerr.Wrapf(err, "scaning file '%s' aborted due to error", fr.fileName)
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
