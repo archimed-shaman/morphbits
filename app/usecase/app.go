@@ -1,10 +1,16 @@
 package usecase
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
 
 	pkgerr "github.com/pkg/errors"
+)
+
+const (
+	passWords     = 4
+	minPassLength = 20
+	maxPassLength = 24
 )
 
 type DictReader interface {
@@ -30,7 +36,7 @@ type App struct {
 	calc       DistanceCalculator
 	metrics    Metrics
 
-	filteredWords map[string]*wItem
+	filteredWords map[int]map[string]*wItem
 }
 
 func NewApp(metrics Metrics, dictReader DictReader, calc DistanceCalculator) *App {
@@ -39,13 +45,17 @@ func NewApp(metrics Metrics, dictReader DictReader, calc DistanceCalculator) *Ap
 		calc:       calc,
 		metrics:    metrics,
 
-		filteredWords: make(map[string]*wItem),
+		filteredWords: make(map[int]map[string]*wItem),
 	}
 }
 
 func (app *App) Run() error {
 	if err := app.dictReader.Run(app.handleWord); err != nil {
 		return pkgerr.Wrap(err, "failed read dictionary")
+	}
+
+	for key, value := range app.filteredWords {
+		fmt.Println(key, len(value))
 	}
 
 	return nil
@@ -59,21 +69,33 @@ func (app *App) handleWord(rawWord string) error {
 		return err
 	}
 
+	length := len(word)
 	key := mkKey(word)
 
 	app.metrics.IncWords()
 
-	if otherWord, found := app.filteredWords[key]; !found {
-		app.filteredWords[key] = &wItem{
-			Data:         word,
-			InternalDist: dist,
+	if m, found := app.filteredWords[length]; !found {
+		app.filteredWords[length] = map[string]*wItem{
+			key: {
+				Data:         word,
+				InternalDist: dist,
+			},
 		}
 
 		app.metrics.IncFilteredWords()
-	} else if otherWord.InternalDist > dist {
-		// Just override current fields to avoid reallocations
-		otherWord.Data = word
-		otherWord.InternalDist = dist
+	} else {
+		if otherWord, found := m[key]; !found {
+			m[key] = &wItem{
+				Data:         word,
+				InternalDist: dist,
+			}
+
+			app.metrics.IncFilteredWords()
+		} else if otherWord.InternalDist > dist {
+			// Just override current fields to avoid reallocations
+			otherWord.Data = word
+			otherWord.InternalDist = dist
+		}
 	}
 
 	return nil
@@ -111,7 +133,6 @@ func mkKey(word string) string {
 	var sb strings.Builder
 
 	sb.WriteByte(word[0])
-	sb.Write([]byte(strconv.Itoa(len(word))))
 	sb.WriteByte(word[len(word)-1])
 
 	return sb.String()
