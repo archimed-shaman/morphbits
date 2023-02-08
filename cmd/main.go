@@ -43,7 +43,7 @@ func main() {
 
 	englishWords := os.Getenv("DICT")
 	if englishWords == "" {
-		englishWords = "./data/corncob_lowercase.txt"
+		englishWords = "/etc/morphbits/data/corncob_lowercase.txt"
 	}
 
 	dictReader := dictionary.NewFileReader(englishWords)
