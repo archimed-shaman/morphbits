@@ -8,11 +8,12 @@ import (
 	log "github.com/sirupsen/logrus"
 	"morphbits.io/app/interface/dictionary"
 	"morphbits.io/app/interface/metrics"
-	"morphbits.io/app/usecase"
+	"morphbits.io/app/usecase/app"
 	"morphbits.io/app/usecase/keyboard"
 )
 
 func main() {
+	start := time.Now()
 	////////////////////////////////////
 	//// go tool pprof main main.prof
 	f, err := os.Create("main.prof")
@@ -42,12 +43,13 @@ func main() {
 
 	dictReader := dictionary.NewFileReader("./data/corncob_lowercase.txt")
 
-	app := usecase.NewApp(m, dictReader, kbd)
+	application := app.New(m, dictReader, kbd)
 
-	if err := app.Run(); err != nil {
+	if err := application.Run(); err != nil {
 		log.WithField("err", err).Info("Application terminated with error code")
 		return
 	}
 
+	log.WithField("elapsed", time.Since(start)).Info("Done")
 	log.WithFields(m.GetMetrics()).Info("Metrics")
 }

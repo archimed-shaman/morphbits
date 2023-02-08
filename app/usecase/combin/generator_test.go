@@ -3,6 +3,8 @@ package combin
 import "testing"
 
 func Test_Generator1(t *testing.T) {
+	t.Parallel()
+
 	g := NewGenerator([]int{1, 2}, 3, nil)
 
 	got := make([][]int, 0)
@@ -35,6 +37,8 @@ func Test_Generator1(t *testing.T) {
 }
 
 func Test_Generator2(t *testing.T) {
+	t.Parallel()
+
 	g := NewGenerator([]int{1, 2, 3}, 3, nil)
 
 	got := make([][]int, 0)
@@ -88,6 +92,8 @@ func Test_Generator2(t *testing.T) {
 }
 
 func Test_GeneratorStrings(t *testing.T) {
+	t.Parallel()
+
 	g := NewGenerator([]string{"first", "second"}, 2, nil)
 
 	got := make([][]string, 0)
@@ -116,6 +122,8 @@ func Test_GeneratorStrings(t *testing.T) {
 }
 
 func Test_GeneratorFilter(t *testing.T) {
+	t.Parallel()
+
 	g := NewGenerator([]int{1, 2, 3}, 3, func(v []int) bool {
 		return v[0] == 2 && v[1] == 2 && v[2] == 2
 	})
@@ -132,6 +140,8 @@ func Test_GeneratorFilter(t *testing.T) {
 }
 
 func Test_GeneratorEmptyDict(t *testing.T) {
+	t.Parallel()
+
 	assertPanic(t, func() {
 		g := NewGenerator([]int{}, 3, nil)
 
@@ -144,6 +154,8 @@ func Test_GeneratorEmptyDict(t *testing.T) {
 }
 
 func Test_GeneratorZeroLength(t *testing.T) {
+	t.Parallel()
+
 	assertPanic(t, func() {
 		g := NewGenerator([]int{1, 2, 3}, 0, nil)
 
@@ -156,6 +168,8 @@ func Test_GeneratorZeroLength(t *testing.T) {
 }
 
 func assertPanic(t *testing.T, f func()) {
+	t.Helper()
+
 	defer func() {
 		if r := recover(); r == nil {
 			t.Errorf("The code did not panic")

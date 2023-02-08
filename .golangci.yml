@@ -79,7 +79,7 @@ linters-settings:
         arguments:
           - maxLitCount: "3"
             allowStrs: '"","err",","'
-            allowInts: "0,1,2"
+            allowInts: "0,1,2,3,1024"
             allowFloats: "0.0,0.,1.0,1.,2.0,2."
 
 linters:

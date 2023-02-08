@@ -92,7 +92,7 @@ func mkNext[A any](dst, dict []A, idx []int) ([]A, bool) {
 	for i := len(idx) - 1; i >= 0; i-- {
 		idx[i]++
 
-		shift = idx[i] > len(dict)-1
+		shift = idx[i] >= len(dict)
 		if shift {
 			idx[i] = 0
 		} else {
