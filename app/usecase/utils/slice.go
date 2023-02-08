@@ -2,8 +2,7 @@ package utils
 
 import "golang.org/x/exp/constraints"
 
-//nolint:ireturn // linter bug
-func Sum[A constraints.Ordered](values ...A) A {
+func Sum[A constraints.Ordered](values ...A) A { //nolint:ireturn // linter bug
 	var sum A
 
 	for i := 0; i < len(values); i++ {
