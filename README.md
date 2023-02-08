@@ -1,3 +1,5 @@
+![build status](https://github.com/archimed-shaman/morphbits/actions/workflows/workflow.yaml/badge.svg)
+
 # Description
 
 Бабушке нужно сгенерировать пароль, она слышала, что если взять четыре \
