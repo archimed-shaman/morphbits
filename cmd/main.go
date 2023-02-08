@@ -41,7 +41,12 @@ func main() {
 		return
 	}
 
-	dictReader := dictionary.NewFileReader("./data/corncob_lowercase.txt")
+	englishWords := os.Getenv("DICT")
+	if englishWords == "" {
+		englishWords = "./data/corncob_lowercase.txt"
+	}
+
+	dictReader := dictionary.NewFileReader(englishWords)
 
 	application := app.New(m, dictReader, kbd)
 

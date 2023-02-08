@@ -6,10 +6,10 @@ import (
 	"morphbits.io/app/usecase/utils"
 )
 
-func getLenCombinations(distDict []int, length int) [][]int {
+func getLenCombinations(distDict []int, length, minPassLen, maxPassLen int) [][]int {
 	gen := combin.NewGenerator(distDict, length, func(l []int) bool {
 		s := utils.Sum(l...)
-		return s >= minPassLength && s <= maxPassLength
+		return s >= minPassLen && s <= maxPassLen
 	})
 
 	const preallocated = 1024
@@ -32,8 +32,8 @@ func calcInternalDistance(word string, calc DistanceCalculator) (int, error) {
 	distance := 0
 
 	for i := 1; i < len(word); i++ {
-		a := word[i]
-		b := word[i-1]
+		a := word[i-1]
+		b := word[i]
 
 		d, err := calc.GetDistance(a, b)
 		if err != nil {

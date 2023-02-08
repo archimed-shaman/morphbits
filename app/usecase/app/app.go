@@ -99,7 +99,7 @@ func (app *App) handleWord(rawWord string) error {
 
 // getBestPass looks for the best word sequences in the each group of words.
 func getBestPass(distDict []int, words wordLenMap, calc DistanceCalculator) []wItem {
-	lenCombinations := getLenCombinations(distDict, passWords)
+	lenCombinations := getLenCombinations(distDict, passWords, minPassLength, maxPassLength)
 	bestDist := utils.MaxInt()
 
 	var (

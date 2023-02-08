@@ -10,6 +10,8 @@ const (
 
 type wordLenMap map[int][]wItem
 
+//go:generate mockgen -source=$GOFILE -destination=mock/$GOFILE
+
 type DictReader interface {
 	Run(handler func(word string) error) error
 }
